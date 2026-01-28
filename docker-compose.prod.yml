@@ -1,0 +1,58 @@
+
+# services:
+#   backend:
+#     build:
+#       context: ./backend
+#       dockerfile: Dockerfile
+#     container_name: social-network-backend
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       - PORT=:8080
+#       - DB_PATH=./db/social-network.db
+#       - UPLOAD_PATH=./public/images
+#       - ALLOWED_ORIGIN=https://yoursocialnetwork.com
+#     volumes:
+#       - backend-db:/app/db
+#       - backend-uploads:/app/public/images
+#     networks:
+#       - social-network
+#     restart: unless-stopped
+#     healthcheck:
+#       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/check-auth"]
+#       interval: 30s
+#       timeout: 10s
+#       retries: 3
+#       start_period: 40s
+
+#   frontend:
+#     build:
+#       context: ./frontend
+#       dockerfile: Dockerfile
+#     container_name: social-network-frontend
+#     ports:
+#       - "80:80"
+#       - "443:443"
+#     depends_on:
+#       - backend
+#     networks:
+#       - social-network
+#     restart: unless-stopped
+#     volumes:
+#       - /etc/letsencrypt:/etc/letsencrypt:ro  # SSL certificates
+#     healthcheck:
+#       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+#       interval: 30s
+#       timeout: 10s
+#       retries: 3
+#       start_period: 10s
+
+# networks:
+#   social-network:
+#     driver: bridge
+
+# volumes:
+#   backend-db:
+#     driver: local
+#   backend-uploads:
+#     driver: local

@@ -1,0 +1,45 @@
+# ❌ Compiled binary (generated from Go source code)
+backend/social-network
+
+# ❌ Database files (user data, not code)
+backend/db/*.db
+backend/db/*.db-shm
+backend/db/*.db-wal
+
+# ❌ User uploads (user content, not code)
+backend/public/images/avatars/*
+backend/public/images/posts/*
+backend/public/images/messages/*
+backend/public/images/comments/*
+backend/public/images/groups/*
+
+# ✅ But keep the empty directories
+!backend/public/images/avatars/.gitkeep
+!backend/public/images/posts/.gitkeep
+!backend/public/images/messages/.gitkeep
+!backend/public/images/comments/.gitkeep
+!backend/public/images/groups/.gitkeep
+
+# ❌ Node modules (auto-installed from package.json)
+frontend/node_modules/
+
+# ❌ Built frontend files (generated from source)
+frontend/dist/
+
+# ❌ Local environment files (may contain secrets)
+frontend/.env.local
+frontend/.env.*.local
+.env
+
+# ❌ Log files
+*.log
+
+# ❌ OS files
+.DS_Store
+Thumbs.db
+
+# ❌ IDE files
+.vscode/
+.idea/
+
+

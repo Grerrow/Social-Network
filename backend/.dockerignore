@@ -1,0 +1,9 @@
+*.db
+*.db-shm
+*.db-wal
+social-network
+.git
+.gitignore
+README.md
+.env
+*.log
