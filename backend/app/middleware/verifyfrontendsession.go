@@ -7,6 +7,7 @@ import (
 	"social-network/db"
 )
 
+// for front end to verify session and get user info (useful for having user data on page load)
 func MeHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {

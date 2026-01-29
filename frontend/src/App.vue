@@ -17,26 +17,3 @@ const layoutComponent = computed(() => route.meta.layout || null)
   </div>
 </template>
 
-<!-- <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f5f5;
-  color: #212529;
-}
-
-#app {
-  min-height: 100vh;
-}
-
-html,
-body,
-#app {
-  height: 100%;
-}
-</style> -->

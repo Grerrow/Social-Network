@@ -8,9 +8,12 @@
           <line x1="14.4142" y1="14.7071" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </span>
-      <input
+      <input 
+        ref="inputRef"
         v-model="query"
         @input="onInput"
+        @keydown.enter="onEnter"
+        @keydown.escape="onEscape"
         placeholder="Search users or groups..."
         class="search-input"
       />
@@ -23,15 +26,37 @@ import { ref } from 'vue'
 
 export default {
   name: 'SearchBar',
-  emits: ['search'],
+  emits: ['search', 'enter', 'escape'],
   setup(_, { emit }) {
     const query = ref('')
+    const inputRef = ref(null)
 
     const onInput = () => {
       emit('search', query.value)
     }
 
-    return { query, onInput }
+    const onEnter = () => {
+      if (query.value.trim()) {
+        emit('enter', query.value)
+      }
+    }
+
+    const onEscape = () => {
+      emit('escape')
+    }
+
+    const clear = () => {
+      query.value = ''
+    }
+
+    return { 
+      query, 
+      inputRef,
+      onInput, 
+      onEnter,
+      onEscape,
+      clear
+    }
   }
 }
 </script>

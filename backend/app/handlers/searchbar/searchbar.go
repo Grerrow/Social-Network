@@ -16,21 +16,7 @@ import (
 // implement fuzzy search or autocomplete features
 // add unit tests for search functionality
 // ========================================
-// CREATE TABLE users (
-//
-//	id INTEGER PRIMARY KEY AUTOINCREMENT,
-//	email TEXT NOT NULL UNIQUE,
-//	password TEXT NOT NULL,
-//	first_name TEXT NOT NULL,
-//	last_name TEXT NOT NULL,
-//	date_of_birth DATE NOT NULL,
-//	avatar TEXT,
-//	username TEXT,
-//	about_me TEXT,
-//	is_private BOOLEAN NOT NULL DEFAULT 1,
-//	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-//
-// );
+
 var users = []models.User{}
 
 // searchbar handler to return users for js to populate the search bar
@@ -47,7 +33,7 @@ func SearchBarHandler(w http.ResponseWriter, r *http.Request) {
 	query = "%" + query + "%"
 
 	rows, err := db.Database.Query(`
-		SELECT id, username, first_name, last_name
+		SELECT id, username, first_name, last_name , avatar
 		FROM users
 		WHERE username LIKE ? OR first_name LIKE ? OR last_name LIKE ?
 		LIMIT 10
@@ -63,9 +49,9 @@ func SearchBarHandler(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var id int
-		var username, firstName, lastName string
+		var username, firstName, lastName, avatar string
 
-		if err := rows.Scan(&id, &username, &firstName, &lastName); err != nil {
+		if err := rows.Scan(&id, &username, &firstName, &lastName, &avatar); err != nil {
 			continue
 		}
 
@@ -73,6 +59,7 @@ func SearchBarHandler(w http.ResponseWriter, r *http.Request) {
 			"id":       id,
 			"username": username,
 			"name":     firstName + " " + lastName,
+			"avatar":   avatar,
 		})
 	}
 

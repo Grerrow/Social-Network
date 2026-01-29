@@ -20,7 +20,12 @@
         <!-- SEARCH (CENTERED) -->
         <div class="navbar-center">
           <div class="search-bar-container">
-            <SearchBar ref="searchBarRef" @search="handleSearch" />
+            <SearchBar 
+              ref="searchBarRef" 
+              @search="handleSearch" 
+              @enter="handleSearchEnter"
+              @escape="handleSearchEscape"
+            />
 
             <!-- SEARCH RESULTS -->
             <transition name="fade">
@@ -39,8 +44,15 @@
                         class="search-link"
                         @click="handleResultClick"
                       >
-                        <span class="search-icon">👤</span>
-                        <span>{{ user.username || user.name }}</span>
+                        <div class="search-result-avatar">
+                          <img 
+                            :src="user.avatar ? getImageUrl(user.avatar) : '/images/placeholder.png'" 
+                            :alt="user.username || user.name"
+                          />
+                        </div>
+                        <div class="search-result-info">
+                          <div class="search-result-name">{{ user.username || user.name }}</div>
+                        </div>
                       </router-link>
                     </div>
                   </div>
@@ -238,6 +250,17 @@ export default {
       }, 300)
     }
 
+    const handleSearchEnter = async (query) => {
+      clearTimeout(timeout)
+      await searchStore.search(query.trim())
+      showResults.value = true
+    }
+
+    const handleSearchEscape = () => {
+      showResults.value = false
+      searchStore.clear()
+    }
+
     const handleResultClick = () => {
       showResults.value = false
       searchStore.clear()
@@ -261,6 +284,8 @@ export default {
     return {
       handleLogout,
       handleSearch,
+      handleSearchEnter,
+      handleSearchEscape,
       handleResultClick,
       toggleChat,
       isChatOpen,
@@ -554,25 +579,57 @@ body {
   right: 0;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(13, 19, 33, 0.13);
-  max-height: 400px;
+  box-shadow: 0 8px 32px rgba(13, 19, 33, 0.15);
+  border: 1px solid rgba(13, 19, 33, 0.08);
+  max-height: 450px;
   overflow-y: auto;
   z-index: 1001;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-results::-webkit-scrollbar {
+  width: 8px;
+}
+
+.search-results::-webkit-scrollbar-track {
+  background: rgba(13, 19, 33, 0.03);
+  border-radius: 0 16px 16px 0;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+  background: rgba(13, 19, 33, 0.15);
+  border-radius: 4px;
+}
+
+.search-results::-webkit-scrollbar-thumb:hover {
+  background: rgba(13, 19, 33, 0.25);
 }
 
 .search-section-title {
   padding: 16px 20px 12px;
   font-weight: 700;
-  font-size: 0.875rem;
-  color: var(--ink-black);
+  font-size: 0.75rem;
+  color: rgba(13, 19, 33, 0.6);
   border-bottom: 1px solid rgba(13, 19, 33, 0.08);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  background: rgba(246, 240, 249, 0.5);
 }
 
 .search-item {
   border-bottom: 1px solid rgba(13, 19, 33, 0.04);
-  transition: background 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .search-item:last-child {
@@ -580,7 +637,7 @@ body {
 }
 
 .search-item:hover {
-  background: var(--lavender-mist);
+  background: linear-gradient(to right, rgba(246, 240, 249, 0.6), rgba(246, 189, 96, 0.08));
 }
 
 .search-link {
@@ -588,11 +645,50 @@ body {
   color: var(--ink-black);
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 20px;
+  gap: 14px;
+  padding: 14px 20px;
   font-weight: 600;
   font-size: 0.9375rem;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
+}
+
+.search-result-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid rgba(246, 189, 96, 0.3);
+  box-shadow: 0 2px 8px rgba(13, 19, 33, 0.08);
+  transition: all 0.2s ease;
+}
+
+.search-item:hover .search-result-avatar {
+  border-color: var(--honey-bronze);
+  box-shadow: 0 4px 12px rgba(246, 189, 96, 0.25);
+  transform: scale(1.05);
+}
+
+.search-result-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.search-result-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.search-result-name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ink-black);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .search-icon {
