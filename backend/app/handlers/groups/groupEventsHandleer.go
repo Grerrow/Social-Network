@@ -7,32 +7,9 @@ import (
 	"time"
 
 	"social-network/app/handlers/websocket"
+	"social-network/app/models"
 	"social-network/db"
 )
-
-type GroupEvent struct {
-	ID            int             `json:"id"`
-	GroupID       int             `json:"group_id"`
-	CreatorID     int             `json:"creator_id"`
-	Title         string          `json:"title"`
-	Description   string          `json:"description"`
-	EventDate     int64           `json:"event_date"`
-	CreatedAt     int64           `json:"created_at"`
-	Creator       *User           `json:"creator,omitempty"`
-	GoingCount    int             `json:"going_count"`
-	NotGoingCount int             `json:"not_going_count"`
-	UserResponse  string          `json:"user_response,omitempty"`
-	Responses     []EventResponse `json:"responses,omitempty"`
-}
-
-type EventResponse struct {
-	GroupID   int    `json:"group_id"`
-	EventID   int    `json:"event_id"`
-	UserID    int    `json:"user_id"`
-	Response  string `json:"response"`
-	CreatedAt int64  `json:"created_at"`
-	User      *User  `json:"user,omitempty"`
-}
 
 // description	"hbuhbnyh"
 // event_date	-27103790578
@@ -44,45 +21,6 @@ type CreateEventRequest struct {
 	EventDate   int64  `json:"event_date"`
 	GroupID     int    `json:"group_id"`
 }
-
-// CREATE TABLE notifications (
-//     id INTEGER PRIMARY KEY AUTOINCREMENT,
-//     user_id INTEGER NOT NULL,
-//     follow_request_id INTEGER,
-//     type TEXT NOT NULL CHECK(type IN ('follow_request','new_follower','user_accepted_follow','new_comment', 'group_invitation', 'group_join_request_approved', 'event_created','group_join_request','event_invitation')),
-//     sender_id INTEGER,
-//     sender_name TEXT,
-//     sender_avatar TEXT,
-//     post_id INTEGER,
-//     group_id INTEGER,
-//     group_name TEXT,
-//     event_id INTEGER,
-//    event_date TIMESTAMP,
-//    event_title TEXT,
-//     is_read BOOLEAN DEFAULT 0,
-//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-//     FOREIGN KEY (sender_id) REFERENCES users(id),
-//     FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE,
-//     FOREIGN KEY (event_id) REFERENCES group_events(id) ON DELETE CASCADE,
-//     FOREIGN KEY (follow_request_id) REFERENCES follow_user_requests(id) ON DELETE CASCADE
-// );
-
-// type Notification struct {
-// 	ID              int       `json:"id"`
-// 	UserID          int       `json:"user_id"`
-// 	FollowRequestID *int64    `json:"follow_request_id,omitempty"`
-// 	Type            string    `json:"type"`
-// 	SenderID        *int      `json:"sender_id,omitempty"`
-// 	SenderName      *string   `json:"sender_name,omitempty"`
-// 	SenderAvatar    *string   `json:"sender_avatar,omitempty"`
-// 	PostID          *int      `json:"post_id,omitempty"`
-// 	GroupID         *int      `json:"group_id,omitempty"`
-// 	GroupName       *string   `json:"group_name,omitempty"`
-// 	EventID         *int      `json:"event_id,omitempty"`
-// 	IsRead          bool      `json:"is_read"`
-// 	CreatedAt       time.Time `json:"created_at"`
-// }
 
 func CreateGroupEvent(w http.ResponseWriter, r *http.Request) {
 	// --- Auth ---
@@ -169,7 +107,7 @@ func CreateGroupEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// --- Fetch creator info ---
-	var creator User
+	var creator models.User
 	if err := tx.QueryRow(
 		`SELECT username, avatar FROM users WHERE id = ?`,
 		userID,
@@ -238,7 +176,7 @@ func CreateGroupEvent(w http.ResponseWriter, r *http.Request) {
 	// ...existing code...
 
 	// --- WebSocket (best effort) ---
-	event := GroupEvent{
+	event := models.GroupEvent{
 		ID:          int(eventID),
 		Title:       req.Title,
 		Description: req.Description,
@@ -318,10 +256,10 @@ func ListGroupEvents(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	events := []GroupEvent{}
+	events := []models.GroupEvent{}
 	for rows.Next() {
-		var e GroupEvent
-		var creator User
+		var e models.GroupEvent
+		var creator models.User
 		var avatar, userResponse *string
 
 		err := rows.Scan(
@@ -335,7 +273,7 @@ func ListGroupEvents(w http.ResponseWriter, r *http.Request) {
 
 		creator.ID = e.CreatorID
 		if avatar != nil {
-			creator.Avatar = *avatar
+			creator.Avatar = avatar
 		}
 		if userResponse != nil {
 			e.UserResponse = *userResponse
@@ -352,7 +290,7 @@ func ListGroupEvents(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(events)
 }
 
-func fetchEventResponses(eventID int) []EventResponse {
+func fetchEventResponses(eventID int) []models.EventResponse {
 	rows, err := db.Database.Query(`
         SELECT ger.id, ger.user_id, ger.response, ger.created_at,
                u.username, u.avatar
@@ -363,14 +301,14 @@ func fetchEventResponses(eventID int) []EventResponse {
     `, eventID)
 
 	if err != nil {
-		return []EventResponse{}
+		return []models.EventResponse{}
 	}
 	defer rows.Close()
 
-	responses := []EventResponse{}
+	responses := []models.EventResponse{}
 	for rows.Next() {
-		var r EventResponse
-		var user User
+		var r models.EventResponse
+		var user models.User
 		var avatar *string
 
 		err := rows.Scan(
@@ -383,7 +321,7 @@ func fetchEventResponses(eventID int) []EventResponse {
 
 		user.ID = r.UserID
 		if avatar != nil {
-			user.Avatar = *avatar
+			user.Avatar = avatar
 		}
 		r.User = &user
 		responses = append(responses, r)
@@ -399,7 +337,7 @@ func RespondToEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req EventResponse
+	var req models.EventResponse
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return

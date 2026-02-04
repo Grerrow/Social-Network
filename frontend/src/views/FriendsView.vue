@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/views/FriendsView.vue -->
 <template>
   <div class="friends-view">
     <div class="friends-container">

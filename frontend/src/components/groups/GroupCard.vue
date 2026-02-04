@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/components/groups/GroupCard.vue -->
 <template>
   <div class="group-card" @click="$emit('click')">
     <div class="group-info">

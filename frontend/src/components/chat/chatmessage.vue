@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/components/chat/chatmessage.vue -->
 <template>
   <div class="chat-messages" :data-chat-id="chatId || groupId">
     <div v-if="chatMessages.length === 0" class="no-messages">

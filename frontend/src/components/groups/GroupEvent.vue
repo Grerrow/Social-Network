@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/components/groups/GroupEvent.vue -->
 <template>
   <div class="group-event">
     <!-- Professional Date Badge -->

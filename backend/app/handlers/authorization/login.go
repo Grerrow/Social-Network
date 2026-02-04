@@ -13,7 +13,9 @@ import (
 	"social-network/db"
 
 	"golang.org/x/crypto/bcrypt"
-) //=================TO DO==================
+)
+
+//=================TO DO==================
 // add input validation and sanitization
 // implement rate limiting to prevent brute-force attacks
 // add account lockout mechanism after multiple failed attempts

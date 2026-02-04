@@ -11,7 +11,7 @@ import (
 	"social-network/db"
 )
 
-// why ai made my code ugly ??????????
+// is vertical better than horizontal?
 func GetNotificationsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

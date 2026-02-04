@@ -1,4 +1,5 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/components/groups/GroupComment.vue -->
+
+<!-- Similar to comment in FeedView -->
 <template>
   <div class="comment">
     <div class="comment-header">

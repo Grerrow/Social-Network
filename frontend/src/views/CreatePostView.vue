@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/views/CreatePostView.vue -->
 <template>
   <div class="create-post-view">
     <div class="create-post-card">

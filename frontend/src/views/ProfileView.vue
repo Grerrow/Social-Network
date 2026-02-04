@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/views/ProfileView.vue -->
 <template>
   <div class="profile-view">
     <div v-if="!profile" class="loading">

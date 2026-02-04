@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/views/GroupDetails.vue -->
 <template>
   <div class="group-details-page" v-if="group">
     <!-- Group Header -->

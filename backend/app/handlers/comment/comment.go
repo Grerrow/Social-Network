@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"social-network/app/generalfuncs"
-	"social-network/app/middleware"
 	"social-network/app/models"
 	"social-network/db"
 )
@@ -35,6 +34,7 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
+	comment.UserID = r.Context().Value("ctxUserID").(int)
 
 	// Input validation ---------------------------------------------------------------------------
 	if comment.Image == nil && strings.TrimSpace(comment.Content) == "" {
@@ -49,17 +49,6 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid image path", http.StatusBadRequest)
 		return
 	}
-
-	// Checking if user is authorized (cookie.Value is session ID) --------------------------------
-	cookieValue := middleware.GetCookieValue(r)
-	userID := middleware.GetUserId(cookieValue)
-	if userID <= 0 {
-		http.Error(w, "Not an authorized user", http.StatusBadRequest)
-		return
-	}
-
-	// set the authenticated user as the comment creator (for security reasons) -------------------
-	comment.UserID = userID
 
 	// Insert comment into database
 	query := `INSERT INTO comments (content, image, post_id, user_id, created_at) 

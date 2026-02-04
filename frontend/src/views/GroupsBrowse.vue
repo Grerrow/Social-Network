@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/views/GroupsBrowse.vue -->
 <template>
   <div class="groups-page">
     <!-- Header -->

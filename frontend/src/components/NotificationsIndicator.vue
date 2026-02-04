@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/components/NotificationsIndicator.vue -->
 <template>
   <div class="notification-bell" @click="openNotifications">
     <svg class="bell-icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

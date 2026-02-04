@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/components/Comment.vue -->
 <template>
   <div class="comment">
     <div class="comment-header">

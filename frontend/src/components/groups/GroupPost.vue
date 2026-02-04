@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/components/groups/GroupPost.vue -->
 <template>
   <div class="group-post">
     <div class="post-header">
@@ -189,7 +188,7 @@ const submitComment = async () => {
       props.groupId, 
       props.post.id, 
       newComment.value.trim(),
-      imagePath  // Pass image path as 4th parameter
+      imagePath  // pass image a parameter to bypass error "no content"
     )
     
     if (comment) {

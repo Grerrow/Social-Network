@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/layouts/MainLayout.vue -->
 <template>
   <div class="main-layout">
     <!-- WebSocket component mounted once for notifications -->
@@ -197,6 +196,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useSearchStore } from '@/stores/search'
+import { useChatStore } from '@/stores/chat'
 
 import WebSocketVue from '@/components/WebSocket.vue'
 import chatsidebar from '@/components/chat/chatsidebar.vue'
@@ -218,6 +218,7 @@ export default {
     const router = useRouter()
     const authStore = useAuthStore()
     const searchStore = useSearchStore()
+    const chatStore = useChatStore()
 
     const showResults = ref(false)
     const searchBarRef = ref(null)
@@ -226,7 +227,11 @@ export default {
     let timeout = null
 
     const handleLogout = async () => {
+      //close chat windows
+      isChatOpen.value = false
+      chatStore.reset() // Clear all chat state including open windows
       await authStore.logout()
+
       router.push('/login')
     }
 

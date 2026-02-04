@@ -40,7 +40,7 @@ EXPOSE 8080
 ENV PORT=:8080
 ENV DB_PATH=./db/social-network.db
 ENV UPLOAD_PATH=./public/images
-# ENV ALLOWED_ORIGIN=http://localhost
+ENV ALLOWED_ORIGIN=http://localhost
 
 # Run the application
 CMD ["./social-network"]

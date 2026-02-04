@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/views/LoginView.vue -->
 <template>
   <div class="login-view">
     <div class="login-card">

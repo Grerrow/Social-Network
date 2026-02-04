@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/components/chat/chatsidebar.vue -->
 <template>
   <div class="chat-sidebar">
     <div class="chat-search">

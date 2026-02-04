@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/components/chat/chatinput.vue -->
 <template>
   <div class="chat-input-container">
     <div class="input-row">

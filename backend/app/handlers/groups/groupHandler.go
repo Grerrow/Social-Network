@@ -8,31 +8,9 @@ import (
 	"strconv"
 	"time"
 
+	"social-network/app/models"
 	"social-network/db"
 )
-
-type CreateGroupRequest struct {
-	Groupname   string `json:"group_name"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-}
-
-type Group struct {
-	ID              int    `json:"id"`
-	Groupname       string `json:"group_name"`
-	Title           string `json:"title"`
-	Description     string `json:"description"`
-	CreatorID       int    `json:"creator_id"`
-	CreatedAt       int64  `json:"created_at"`
-	MemberCount     int    `json:"member_count"`
-	IsMember        bool   `json:"is_member"`
-	IsCreator       bool   `json:"is_creator"`
-	IsInvited       bool   `json:"is_invited"`
-	HasRequested    bool   `json:"has_requested"`
-	Creator         *User  `json:"creator,omitempty"`
-	Members         []User `json:"members,omitempty"`
-	PendingRequests []User `json:"pending_requests,omitempty"`
-}
 
 type User struct {
 	ID       int    `json:"id"`
@@ -48,7 +26,7 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req CreateGroupRequest
+	var req models.CreateGroupRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
@@ -106,7 +84,7 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch the created group
-	group := Group{
+	group := models.Group{
 		ID:          int(groupID),
 		Groupname:   req.Groupname, // Add this line
 		Title:       req.Title,
@@ -152,9 +130,9 @@ func ListGroups(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	groups := []Group{}
+	groups := []models.Group{}
 	for rows.Next() {
-		var g Group
+		var g models.Group
 		var createdAt time.Time
 		err := rows.Scan(
 			&g.ID, &g.Groupname, &g.Title, &g.Description, &g.CreatorID, &createdAt,
@@ -194,7 +172,7 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("GetGroup: fetching group %d for user %d", groupID, userID)
 
-	var g Group
+	var g models.Group
 	var createdAt time.Time
 	err = db.Database.QueryRow(`
         SELECT 
@@ -227,7 +205,7 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 	g.CreatedAt = createdAt.Unix()
 
 	// Fetch creator info
-	var creator User
+	var creator models.User
 	var avatar sql.NullString
 	err = db.Database.QueryRow(
 		"SELECT id, username, avatar FROM users WHERE id = ?",
@@ -235,7 +213,8 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 	).Scan(&creator.ID, &creator.Username, &avatar)
 	if err == nil {
 		if avatar.Valid {
-			creator.Avatar = avatar.String
+			avatarStr := avatar.String
+			creator.Avatar = &avatarStr
 		}
 		g.Creator = &creator
 	}
@@ -252,7 +231,7 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			defer memberRows.Close()
 			for memberRows.Next() {
-				var m User
+				var m models.User
 				if err := memberRows.Scan(&m.ID, &m.Username, &m.Avatar); err == nil {
 					g.Members = append(g.Members, m)
 				}
@@ -262,18 +241,21 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 		// Fetch pending requests if user is creator
 		if g.IsCreator {
 			requestRows, err := db.Database.Query(`
-                SELECT u.id, u.username, COALESCE(u.avatar, '') as avatar
-                FROM group_join_requests gjr
-                JOIN users u ON gjr.user_id = u.id
-                WHERE gjr.group_id = ? AND gjr.status = 'pending'
-                ORDER BY gjr.created_at DESC
-            `, groupID)
+				SELECT u.id, u.username, COALESCE(u.avatar, '') as avatar
+				FROM group_join_requests gjr
+				JOIN users u ON gjr.user_id = u.id
+				WHERE gjr.group_id = ? AND gjr.status = 'pending'
+				ORDER BY gjr.created_at DESC
+			`, groupID)
 			if err == nil {
 				defer requestRows.Close()
 				for requestRows.Next() {
-					var u User
-					if err := requestRows.Scan(&u.ID, &u.Username, &u.Avatar); err == nil {
-						u.UserID = u.ID
+					var u models.User
+					var avatar string
+					if err := requestRows.Scan(&u.ID, &u.Username, &avatar); err == nil {
+						if avatar != "" {
+							u.Avatar = &avatar
+						}
 						g.PendingRequests = append(g.PendingRequests, u)
 					}
 				}

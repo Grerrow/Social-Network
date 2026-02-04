@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/views/FeedView.vue -->
 <template>
   <div class="feed-view">
     <div class="feed-header">

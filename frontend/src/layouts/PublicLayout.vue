@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/layouts/PublicLayout.vue -->
 <template>
   <div class="public-layout">
     <nav class="navbar">

@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/views/NotificationsView.vue -->
 <template>
   <div class="notifications-view">
     <div class="header">

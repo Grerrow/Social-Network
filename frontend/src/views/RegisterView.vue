@@ -1,4 +1,3 @@
-<!-- filepath: /home/kali/Desktop/social-network/frontend/src/views/RegisterView.vue -->
 <template>
   <div class="register-view">
     <div class="register-card">
